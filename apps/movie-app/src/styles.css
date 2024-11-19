@@ -2,3 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 /* You can add global styles to this file, and also import other style files */
+
+@layer base {
+  body {
+    background-color: #000000;
+    color: #ffffff;
+    font-family: "sans-serif";
+  }
+}
