@@ -1,14 +1,18 @@
-import { createRootRoute, Link, Outlet } from '@tanstack/react-router';
+import {
+  createRootRouteWithContext,
+  ErrorComponent,
+  Link,
+  Outlet,
+} from '@tanstack/react-router';
 import { TanStackRouterDevtools } from '@tanstack/router-devtools';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { ErrorBoundary } from 'react-error-boundary';
-import { ErrorBoundary as ErrorBoundaryFallback, Loader } from '@movie-app/components';
-import { Suspense } from 'react';
+import { QueryClient } from '@tanstack/react-query';
 
-export const Route = createRootRoute({
-  component: () => (
-    <QueryClientProvider client={new QueryClient()}>
-      <ErrorBoundary FallbackComponent={ErrorBoundaryFallback}>
+export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
+  {
+    errorComponent: ErrorComponent,
+    pendingComponent: () => <div>loading...</div>,
+    component: () => (
+      <>
         <div className="p-2">
           <Link to="/" className="[&.active]:font-bold">
             Home
@@ -16,11 +20,9 @@ export const Route = createRootRoute({
         </div>
         <hr />
 
-        <Suspense fallback={<Loader loaderDescription="Please wait..." /> } >
-          <Outlet />
-        </Suspense>
+        <Outlet />
         <TanStackRouterDevtools />
-      </ErrorBoundary>
-    </QueryClientProvider>
-  ),
-});
+      </>
+    ),
+  }
+);

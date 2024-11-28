@@ -8,24 +8,33 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
-import { createFileRoute } from '@tanstack/react-router'
-
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
-import { Route as MoviesMovieIdMovieNameImport } from './routes/movies.$movieId.$movieName'
-
-// Create Virtual Routes
-
-const IndexLazyImport = createFileRoute('/')()
+import { Route as IndexImport } from './routes/index'
+import { Route as IndexStoriesImport } from './routes/index.stories'
+import { Route as MoviesMovieStoriesImport } from './routes/movies/Movie.stories'
+import { Route as MoviesMovieIdMovieNameImport } from './routes/movies/$movieId.$movieName'
 
 // Create/Update Routes
 
-const IndexLazyRoute = IndexLazyImport.update({
+const IndexRoute = IndexImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRoute,
-} as any).lazy(() => import('./routes/index.lazy').then((d) => d.Route))
+} as any)
+
+const IndexStoriesRoute = IndexStoriesImport.update({
+  id: '/index/stories',
+  path: '/index/stories',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const MoviesMovieStoriesRoute = MoviesMovieStoriesImport.update({
+  id: '/movies/Movie/stories',
+  path: '/movies/Movie/stories',
+  getParentRoute: () => rootRoute,
+} as any)
 
 const MoviesMovieIdMovieNameRoute = MoviesMovieIdMovieNameImport.update({
   id: '/movies/$movieId/$movieName',
@@ -41,7 +50,14 @@ declare module '@tanstack/react-router' {
       id: '/'
       path: '/'
       fullPath: '/'
-      preLoaderRoute: typeof IndexLazyImport
+      preLoaderRoute: typeof IndexImport
+      parentRoute: typeof rootRoute
+    }
+    '/index/stories': {
+      id: '/index/stories'
+      path: '/index/stories'
+      fullPath: '/index/stories'
+      preLoaderRoute: typeof IndexStoriesImport
       parentRoute: typeof rootRoute
     }
     '/movies/$movieId/$movieName': {
@@ -51,44 +67,74 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MoviesMovieIdMovieNameImport
       parentRoute: typeof rootRoute
     }
+    '/movies/Movie/stories': {
+      id: '/movies/Movie/stories'
+      path: '/movies/Movie/stories'
+      fullPath: '/movies/Movie/stories'
+      preLoaderRoute: typeof MoviesMovieStoriesImport
+      parentRoute: typeof rootRoute
+    }
   }
 }
 
 // Create and export the route tree
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexLazyRoute
+  '/': typeof IndexRoute
+  '/index/stories': typeof IndexStoriesRoute
   '/movies/$movieId/$movieName': typeof MoviesMovieIdMovieNameRoute
+  '/movies/Movie/stories': typeof MoviesMovieStoriesRoute
 }
 
 export interface FileRoutesByTo {
-  '/': typeof IndexLazyRoute
+  '/': typeof IndexRoute
+  '/index/stories': typeof IndexStoriesRoute
   '/movies/$movieId/$movieName': typeof MoviesMovieIdMovieNameRoute
+  '/movies/Movie/stories': typeof MoviesMovieStoriesRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
-  '/': typeof IndexLazyRoute
+  '/': typeof IndexRoute
+  '/index/stories': typeof IndexStoriesRoute
   '/movies/$movieId/$movieName': typeof MoviesMovieIdMovieNameRoute
+  '/movies/Movie/stories': typeof MoviesMovieStoriesRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/movies/$movieId/$movieName'
+  fullPaths:
+    | '/'
+    | '/index/stories'
+    | '/movies/$movieId/$movieName'
+    | '/movies/Movie/stories'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/movies/$movieId/$movieName'
-  id: '__root__' | '/' | '/movies/$movieId/$movieName'
+  to:
+    | '/'
+    | '/index/stories'
+    | '/movies/$movieId/$movieName'
+    | '/movies/Movie/stories'
+  id:
+    | '__root__'
+    | '/'
+    | '/index/stories'
+    | '/movies/$movieId/$movieName'
+    | '/movies/Movie/stories'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
-  IndexLazyRoute: typeof IndexLazyRoute
+  IndexRoute: typeof IndexRoute
+  IndexStoriesRoute: typeof IndexStoriesRoute
   MoviesMovieIdMovieNameRoute: typeof MoviesMovieIdMovieNameRoute
+  MoviesMovieStoriesRoute: typeof MoviesMovieStoriesRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
-  IndexLazyRoute: IndexLazyRoute,
+  IndexRoute: IndexRoute,
+  IndexStoriesRoute: IndexStoriesRoute,
   MoviesMovieIdMovieNameRoute: MoviesMovieIdMovieNameRoute,
+  MoviesMovieStoriesRoute: MoviesMovieStoriesRoute,
 }
 
 export const routeTree = rootRoute
@@ -102,14 +148,22 @@ export const routeTree = rootRoute
       "filePath": "__root.tsx",
       "children": [
         "/",
-        "/movies/$movieId/$movieName"
+        "/index/stories",
+        "/movies/$movieId/$movieName",
+        "/movies/Movie/stories"
       ]
     },
     "/": {
-      "filePath": "index.lazy.tsx"
+      "filePath": "index.tsx"
+    },
+    "/index/stories": {
+      "filePath": "index.stories.tsx"
     },
     "/movies/$movieId/$movieName": {
-      "filePath": "movies.$movieId.$movieName.tsx"
+      "filePath": "movies/$movieId.$movieName.tsx"
+    },
+    "/movies/Movie/stories": {
+      "filePath": "movies/Movie.stories.tsx"
     }
   }
 }

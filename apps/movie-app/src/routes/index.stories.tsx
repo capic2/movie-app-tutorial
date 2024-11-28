@@ -1,8 +1,9 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import IndexPage from './IndexPage';
 import { http, HttpResponse } from 'msw';
+import { IndexPage } from './index';
 
 const meta: Meta<typeof IndexPage> = {
+  title: 'Pages/index',
   component: IndexPage,
   parameters: {
     msw: {
