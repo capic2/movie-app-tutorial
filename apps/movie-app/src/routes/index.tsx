@@ -1,52 +1,55 @@
 import * as React from 'react';
-import { createFileRoute } from '@tanstack/react-router';
+import { createFileRoute, Link } from '@tanstack/react-router';
 import ky from 'ky';
 import { queryOptions, useSuspenseQuery } from '@tanstack/react-query';
 import { popularMoviesResponseSchema } from '../zod/schemas/movies';
 import { popularPersonResponseSchema } from '../zod/schemas/person';
 import { Hero, MovieCard } from '@movie-app/components';
 import { getImageUrl, ImageType } from '../utils/images';
+import { parseZodResult } from '@movie-app/http-client';
 
 const popularPersonQueryOptions = () =>
   queryOptions({
     queryKey: ['allPopularPersonQuery'],
     queryFn: () =>
-      ky
-        .get(
-          'https://api.themoviedb.org/3/person/popular?language=en-US&page=1',
-          {
-            headers: {
-              Authorization:
-                'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJhYzNhZDY0YWI2Zjc3MjZmZmIzZDMxMTRlNDk4YzNjOCIsIm5iZiI6MTczMDYyMDM0Ny43NjAxOTM2LCJzdWIiOiI2NzI3Mjc2ZjU3NzIyYjU1NzE3YWEyMzkiLCJzY29wZXMiOlsiYXBpX3JlYWQiXSwidmVyc2lvbiI6MX0.zS8S6907qioR1k9fi3Uv7-F3ZvHxrM8WB2JRrxPTx6Y',
-              accept: 'application/json',
-            },
-          }
-        )
-        .json(),
-    select: (data) => popularPersonResponseSchema.parse(data),
+      parseZodResult({
+        kyMethod: () =>
+          ky.get(
+            'https://api.themoviedb.org/3/person/popular?language=en-US&page=1',
+            {
+              headers: {
+                Authorization:
+                  'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJhYzNhZDY0YWI2Zjc3MjZmZmIzZDMxMTRlNDk4YzNjOCIsIm5iZiI6MTczMDYyMDM0Ny43NjAxOTM2LCJzdWIiOiI2NzI3Mjc2ZjU3NzIyYjU1NzE3YWEyMzkiLCJzY29wZXMiOlsiYXBpX3JlYWQiXSwidmVyc2lvbiI6MX0.zS8S6907qioR1k9fi3Uv7-F3ZvHxrM8WB2JRrxPTx6Y',
+                accept: 'application/json',
+              },
+            }
+          ),
+        schema: popularPersonResponseSchema,
+      }),
   });
 
 const popularMovieQueryOptions = () =>
   queryOptions({
     queryKey: ['allPopularMovieQuery'],
     queryFn: () =>
-      ky
-        .get(
-          'https://api.themoviedb.org/3/movie/popular?language=en-US&page=1',
-          {
-            headers: {
-              Authorization:
-                'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJhYzNhZDY0YWI2Zjc3MjZmZmIzZDMxMTRlNDk4YzNjOCIsIm5iZiI6MTczMDYyMDM0Ny43NjAxOTM2LCJzdWIiOiI2NzI3Mjc2ZjU3NzIyYjU1NzE3YWEyMzkiLCJzY29wZXMiOlsiYXBpX3JlYWQiXSwidmVyc2lvbiI6MX0.zS8S6907qioR1k9fi3Uv7-F3ZvHxrM8WB2JRrxPTx6Y',
-              accept: 'application/json',
-            },
-          }
-        )
-        .json(),
-    select: (data) => popularMoviesResponseSchema.parse(data),
+      parseZodResult({
+        kyMethod: () =>
+          ky.get(
+            'https://api.themoviedb.org/3/movie/popular?language=en-US&page=1',
+            {
+              headers: {
+                Authorization:
+                  'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJhYzNhZDY0YWI2Zjc3MjZmZmIzZDMxMTRlNDk4YzNjOCIsIm5iZiI6MTczMDYyMDM0Ny43NjAxOTM2LCJzdWIiOiI2NzI3Mjc2ZjU3NzIyYjU1NzE3YWEyMzkiLCJzY29wZXMiOlsiYXBpX3JlYWQiXSwidmVyc2lvbiI6MX0.zS8S6907qioR1k9fi3Uv7-F3ZvHxrM8WB2JRrxPTx6Y',
+                accept: 'application/json',
+              },
+            }
+          ),
+        schema: popularMoviesResponseSchema,
+      }),
   });
 
 export const Route = createFileRoute('/')({
-  component: IndexPage,
+  component: IndexComponent,
   loader: async ({ context: { queryClient } }) => {
     const popularPersonPromise = queryClient.ensureQueryData(
       popularPersonQueryOptions()
@@ -59,7 +62,7 @@ export const Route = createFileRoute('/')({
   },
 });
 
-export function IndexPage() {
+export function IndexComponent() {
   const { data: popularPersons } = useSuspenseQuery(
     popularPersonQueryOptions()
   );
@@ -85,16 +88,15 @@ export function IndexPage() {
         <h2>Popular movies</h2>
         <div className="grid grid-cols-6 auto-rows-auto gap-4">
           {popularMovies.results.map((movie) => (
-            <MovieCard
-              key={movie.id}
-              imageUrl={getImageUrl(ImageType.W300, movie.poster_path)}
-              imageAlt={`${movie.title} Poster`}
-              cardTitle={movie.title}
-              cardText={`${movie.vote_average} / 10`}
-              cardAction={() => {
-                /* go to movie details */
-              }}
-            />
+            <Link to="/movies/$movieId" params={{ movieId: String(movie.id) }}>
+              <MovieCard
+                key={movie.id}
+                imageUrl={getImageUrl(ImageType.W300, movie.poster_path)}
+                imageAlt={`${movie.title} Poster`}
+                cardTitle={movie.title}
+                cardText={`${movie.vote_average} / 10`}
+              />
+            </Link>
           ))}
         </div>
       </section>
@@ -112,9 +114,6 @@ export function IndexPage() {
               imageAlt={`${people.name} Poster`}
               cardTitle={people.name}
               cardText=""
-              cardAction={() => {
-                /* go to person details */
-              }}
             />
           ))}
         </div>

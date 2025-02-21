@@ -4,6 +4,7 @@ import * as ReactDOM from 'react-dom/client';
 import { routeTree } from './routeTree.gen';
 import { createRouter, RouterProvider } from '@tanstack/react-router';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { IntlProvider } from 'react-intl';
 
 const queryClient = new QueryClient();
 
@@ -29,7 +30,9 @@ if (!rootElement.innerHTML) {
   root.render(
     <StrictMode>
       <QueryClientProvider client={queryClient}>
-        <RouterProvider router={router} />
+        <IntlProvider locale="fr">
+          <RouterProvider router={router} />
+        </IntlProvider>
       </QueryClientProvider>
     </StrictMode>
   );

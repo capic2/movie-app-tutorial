@@ -1,0 +1,19 @@
+{
+  "name": "http-client",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/http-client/src",
+  "projectType": "library",
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "@nx/vite:build",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/http-client",
+        "main": "packages/http-client/src/index.ts",
+        "tsConfig": "packages/http-client/tsconfig.lib.json",
+        "assets": ["packages/http-client/*.md"]
+      }
+    }
+  }
+}

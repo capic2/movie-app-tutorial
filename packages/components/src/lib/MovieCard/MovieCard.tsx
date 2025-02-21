@@ -3,21 +3,16 @@ interface MovieCardProps {
   imageAlt: string;
   cardTitle: string;
   cardText: string;
-  cardAction: () => void;
 }
 
 const MovieCard = ({
   imageUrl,
-  cardAction,
   cardTitle,
   cardText,
   imageAlt,
 }: MovieCardProps) => {
   return (
-    <div
-      className="h-[450px] max-w-[150px] shadow rounded-lg text-black text-center"
-      onClick={cardAction}
-    >
+    <div className="h-[450px] max-w-[150px] shadow rounded-lg text-black text-center">
       {imageUrl ? (
         <img
           src={imageUrl}
